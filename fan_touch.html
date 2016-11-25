@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="js/jquery-1.8.3.min.js"></script>
+    <script src="js/velocity.min.js"></script>  
+    <style>
+    *{
+        margin:0;
+        padding:0;
+        list-style: none;
+    }
+    html,body{
+        height: 100%;
+        overflow: hidden;
+    }
+    body{
+        perspective:600px;
+        -webkit-perspective:600px;
+        background:rgba(0,0,0,0.8);
+    }
+
+    .contain{
+        width:800px;
+        height:400px;
+        position: absolute;
+        left:50%;
+        top:50%;
+        transform:translate(-50%,-50%);
+        -webkit-transform:translate(-50%,-50%);
+        transform-style:preserve-3d;
+        -webkit-transform-style:preserve-3d;
+    }
+
+    .contain div{
+        width: 100px;
+        height: 400px;
+        position: absolute;
+        left:350px;
+        top:0;
+        transform-origin:20px 380px;
+        -webkit-transform-origin:20px 380px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition:all 0.8s ease 0s;
+        -webkit-transition:all 0.8s ease 0s;
+    }
+
+    </style>
+</head>
+<body>
+<div class="contain">
+
+    <div style="background:#111;"></div>
+    <div style="background:#f16729;"></div>
+    <div style="background:#f89322;"></div>
+    <div style="background:#ffcf14;"></div>
+    <div style="background:#ffea0d;"></div>
+    <div style="background:#87b11d;"></div>
+    <div style="background:#008253;"></div>
+    <div style="background:#3277b5;"></div>
+    <div style="background:#4c549f;"></div>
+    <div style="background:#764394;"></div>
+    <div style="background:#ca0d86;"></div>
+    <div style="background:#ea2a29;" class="last"></div>
+</div>
+    <script>
+
+
+    var width=$(window).width();
+    var height=$(window).height();
+
+    $('.contain').css({
+        'width':width*0.95,
+        'height':width*0.95/2
+    });
+
+    $('.contain div').css({
+        'width':width*0.45/4,
+        'height':width*0.45,
+        'left':width*0.45,
+        'transform-origin':'10px '+(width*0.45-10)+'px',
+        '-webkit-transform-origin':'10px '+(width*0.45-10)+'px'
+    });
+
+    $('.contain div:last').on('touchstart',function(e){
+        // console.log(1);
+        e.stopPropagation();
+        e.preventDefault();
+        $('.contain div').each(function(i){
+            $(this).css({
+                'transform':'rotate('+(-90+15*i)+'deg)',
+                '-webkit-transform':'rotate('+(-90+15*i)+'deg)',
+                'z-index':i
+            });
+        });
+    });
+
+    $('.contain div').not('.last').on('touchstart',function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        var index=$(this).index();
+
+        $(this).css({
+            'transform':'rotate(0deg)',
+            '-webkit-transform':'rotate(0deg)'
+        });
+        
+        $('.contain div:gt('+index+')').each(function(i){
+            var dis=$(this).index()-index;
+            $(this).css({
+                'transform':'rotate('+(15*dis)+'deg)',
+                '-webkit-transform':'rotate('+(15*dis)+'deg)'
+            });
+        });
+
+        $('.contain div:lt('+index+')').each(function(i){
+            var dis=index-$(this).index();
+            $(this).css({
+                'transform':'rotate('+(0-15*dis)+'deg)',
+                '-webkit-transform':'rotate('+(0-15*dis)+'deg)'
+            });
+        });
+    });
+
+    $(document).on('touchstart',function(){
+        $('.contain div').each(function(i){
+            $(this).css({
+                'transform':'rotate(0deg)',
+                '-webkit-transform':'rotate(0deg)'
+            });
+        });
+    });
+
+    </script>
+</body>
+</html>

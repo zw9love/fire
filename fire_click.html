@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="js/jquery-1.8.3.min.js"></script>
+    <style>
+    *{
+        margin:0;
+        padding: 0;
+
+    }
+    body{
+        width:100%;
+        height: 100%;
+        background: #333;
+    }
+    #canvas{
+        position: absolute;
+        left:50%;
+        top:50%;
+        transform:translate(-50%,-50%);
+        -webkit-transform:translate(-50%,-50%);
+    }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+    var width=$(window).width();
+    var height=$(window).height();
+    var canvas=document.querySelector('canvas');
+    canvas.width=width;
+    canvas.height=height;
+    var ctx=canvas.getContext('2d');
+    ctx.globalAlpha=0.8;
+    var cirArr=[];
+    var lock=true;
+    var color=['skyblue','#f16729','#f89322','#ffcf14','#ffea0d','#87b11d','#008253','#3277b5','#4c549f','#764394','#ca0d86','#ea2a29','#fff'];
+    // 兼容IE，火狐谷歌(加载顺序)
+    var requestAnimFrame = null;
+    canvas.onclick=function(ent){
+        if(!lock) return;
+        lock=false;
+        var e=ent||event;
+        var x=e.clientX;
+        var y=e.clientY;
+        var rand_x1=x-50;
+        var rand_x2=x+50;
+        var rand_y1=y-50;
+        var rand_y2=y+50;
+        
+        for(var i=0;i<50;i++){
+            cirArr.push(new Circle({
+                x1:rand_x1,
+                x2:rand_x2,
+                y1:rand_y1,
+                y2:rand_y2,
+                radius:getRand(30,50)
+            }));
+        }
+
+        requestAnimFrame = (function() {
+        return window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            function(callback) {
+                window.setTimeout(callback, 1000 / 60);
+            };
+        })();
+
+        run();
+        
+    };
+
+    function getRand(n,m){
+        //2-20
+        return Math.ceil(Math.random()*10000)%(m-n+1)+n;
+    };
+
+    //球形类
+    function Circle(json){
+        this.x=getRand(json.x1,json.x2);
+        this.y=getRand(json.y1,json.y2);
+        this.radius=json.radius;
+        this.random1=getRand(-6,6);
+        this.random2=getRand(-6,6);
+        this.color=color[getRand(0,color.length-1)];
+        this.init();
+    }
+
+    Circle.prototype.init=function(){
+        // ctx.clearRect(this.x-this.radius,this.y-this.radius,this.radius,this.radius);
+        // console.log(this.x-this.radius,this.y-this.radius,this.radius);
+        // ctx.clearRect(0,0,width,height);
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,this.radius,0,2*Math.PI,false);
+        ctx.fillStyle=this.color;
+        ctx.fill();
+        ctx.closePath();
+        
+    };
+
+    Circle.prototype.change=function(){
+        this.radius=this.radius-getRand(1,2);
+        if(this.radius<=0 ) return;
+        this.x=this.x-this.random1;
+        this.y=this.y-this.random2;
+        this.init();
+    };
+
+    function run(){
+
+        var flag=true;
+        
+        ctx.clearRect(0,0,width,height);
+
+        for(var j in cirArr){
+            if(cirArr[j].radius>0){
+                flag=false;
+            }
+        }
+
+        if(flag){
+
+            lock=true;
+
+        }else{
+            for(var i in cirArr){
+            cirArr[i].change();
+            }
+
+            requestAnimFrame(run);
+        }
+
+        
+    }
+
+    
+    </script>
+</body>
+</html>
